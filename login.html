@@ -1,0 +1,55 @@
+<link href="css/style.css" rel="stylesheet">
+<style>
+    * {
+        font-weight:bold;
+    }
+</style>
+
+<main class="container">
+    <div class="login">
+        <textarea id="login-box" class="chat-box" rows="1" placeholder="Username"></textarea>
+        <button class="button" style="margin-top: 5px;">Login</button>
+    </div>
+</main>
+
+<script>
+    const socket = new WebSocket(`ws://${location.hostname}:8081`);
+    const b = document.querySelector(".button")
+    const usr = document.querySelector(".chat-box")
+
+    function login() {
+        out = {'event': 'login', 'username': usr.value}
+        socket.send(JSON.stringify(out))
+    }
+
+    b.addEventListener('click', () => {
+        login();
+    })
+
+    socket.addEventListener('message', function (event) {
+        data = JSON.parse(event.data)
+        switch(data.event){
+            case 'login-success':
+                console.log('success')
+                document.cookie = `token=${data.token}`
+                document.cookie = `username=${usr.value}`
+                location.reload();
+                break;
+            case 'login-failure':
+                console.log("login fail")
+                break;
+        }
+    });
+
+    usr.addEventListener("keypress", (event) => {
+        if(event.which === 13){
+            if(usr.value !== "") {
+                login()
+            }
+            event.preventDefault();
+        }
+    })
+
+
+    
+</script>
