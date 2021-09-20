@@ -20,19 +20,11 @@ async def handle_index(request):
     if 'token' in request.cookies:
         token = request.cookies['token']
     if(token == None):
+        print("login")
         return web.FileResponse('./login.html')
     else:
+        print("chat")
         return web.FileResponse('./chat.html')
-
-async def error_middleware(request, handler):
-    try:
-        response = await handler(request)
-        if response.status != 404:
-            return response
-        message = response.message
-    except Exception as ex:
-        pass
-    return web.FileResponse('./404.html')
 
 class Server:
     def __init__(self, ip, http_port, websocket_port=8081):
@@ -43,7 +35,7 @@ class Server:
         self.clients = {}
         self.id_set = list(range(1000)) #probably should remove the hard cap
 
-        self.app = web.Application(middlewares=[error_middleware])
+        self.app = web.Application()
         self.app.add_routes([web.get('/', handle_index),
         web.static('/cdn', "cdn"),
         web.static('/css', "css")])
