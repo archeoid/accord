@@ -1,12 +1,18 @@
-<link href="css/style.css" rel="stylesheet">
+<head>
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="Expires" content="-1">
+    <link href="css/style.css" rel="stylesheet">
+</head>
 
-<main class="container">
-    <div class="chat">    
-    </div>
-    <div class="box">
-        <textarea id="chat-box" class="chat-box" rows="1" placeholder="Type here..."></textarea>
-    </div>
-</main>
+<body>
+    <main class="container">
+        <div class="chat">    
+        </div>
+        <div class="box">
+            <textarea id="chat-box" class="chat-box" rows="1" placeholder="Type here..."></textarea>
+        </div>
+    </main>
+</body>
 
 <script>
     const socket = new WebSocket(`ws://${location.hostname}:8081`);

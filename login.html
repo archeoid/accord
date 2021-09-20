@@ -1,16 +1,21 @@
-<link href="css/style.css" rel="stylesheet">
-<style>
-    * {
-        font-weight:bold;
-    }
-</style>
-
-<main class="container">
-    <div class="login">
-        <textarea id="login-box" class="chat-box" rows="1" placeholder="Username"></textarea>
-        <button class="button" style="margin-top: 5px;">Login</button>
-    </div>
-</main>
+<head>
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="Expires" content="-1">
+    <link href="css/style.css" rel="stylesheet">
+    <style>
+        * {
+            font-weight:bold;
+        }
+    </style>
+</head>
+<body>
+    <main class="container">
+        <div class="login">
+            <textarea id="login-box" class="chat-box" rows="1" placeholder="Username"></textarea>
+            <button class="button" style="margin-top: 5px;">Login</button>
+        </div>
+    </main>
+</body>
 
 <script>
     const socket = new WebSocket(`ws://${location.hostname}:8081`);
