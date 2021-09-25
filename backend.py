@@ -15,16 +15,30 @@ class User:
         self.pfp = "cdn/default.png"
         self.password = "password"
 
-async def handle_index(request):
+async def has_token(request):
     token = None
     if 'token' in request.cookies:
         token = request.cookies['token']
-    if(token == None):
-        print("login")
-        return web.FileResponse('./login.html')
+    return token != None
+
+async def handle_redirect(request):
+    token = await has_token(request)
+    if not token:
+        raise web.HTTPFound('/login')
     else:
-        print("chat")
-        return web.FileResponse('./chat.html')
+        raise web.HTTPFound('/chat')
+
+async def handle_chat(request):
+    token = await has_token(request)
+    if not token:
+        raise web.HTTPFound('/login')
+    return web.FileResponse('./chat.html')
+
+async def handle_login(request):
+    token = await has_token(request)
+    if token:
+        raise web.HTTPFound('/chat')
+    return web.FileResponse('./login.html')
 
 class Server:
     def __init__(self, ip, http_port, websocket_port=8081):
@@ -36,7 +50,9 @@ class Server:
         self.id_set = list(range(1000)) #probably should remove the hard cap
 
         self.app = web.Application()
-        self.app.add_routes([web.get('/', handle_index),
+        self.app.add_routes([web.get('/', handle_redirect),
+        web.get('/login', handle_login),
+        web.get('/chat', handle_chat),
         web.static('/cdn', "cdn"),
         web.static('/css', "css")])
         self.runner = web.AppRunner(self.app)
@@ -94,11 +110,12 @@ class Server:
 
     async def handler(self, id, msg):
         print("event: ", msg['event'])
-        username = msg['username']
         event = msg['event']
 
         #handle login
         if(event == 'login'):
+            username = msg['username']
+            #password = msg['password']
             if self.login(username, password=""):
                 out = {"event": "login-success", 'token': username} #todo: derive an actual token
             else:
@@ -108,8 +125,8 @@ class Server:
 
         #every non-login event needs to have a valid token
         token = msg['token']
-        if not self.verify(token, username): #todo: actually verify token
-            await self.clients[id].send(json.dumps({'event': 'validation-failure'}))
+        if not self.verify(token): #todo: actually verify token
+            await self.clients[id].send(json.dumps({'event': 'token-error'}))
             return
         
         #handle regular events

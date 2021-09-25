@@ -1,6 +1,4 @@
 <head>
-    <meta http-equiv="Cache-control" content="no-cache">
-    <meta http-equiv="Expires" content="-1">
     <link href="css/style.css" rel="stylesheet">
 </head>
 
@@ -21,7 +19,7 @@
     var token = cookies.token
 
     socket.addEventListener('open', function (event) {
-        //socket.send(JSON.stringify({'event': 'hello'}));
+        console.log("socket open")
     });
 
     socket.addEventListener('message', function (event) {
